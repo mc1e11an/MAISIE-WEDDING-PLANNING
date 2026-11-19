@@ -73,7 +73,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     <dt>2</dt><dd>bars, one on each side</dd>
     <dt>7</dt><dd>wine barrels, incl. card box at the entrance</dd>
   </dl>
-  <p class="note">Both sides open: the folding partition is stacked back, and the second side holds a cocktail lounge, grazing table and donut wall. Modelled from venue photos; sizes (about 32 × 30 m together) are estimates, not from floor plans.</p>
+  <p class="note">Both sides open: the folding partition is stacked back. Cocktail hour is by the left bar, the guest book is at the back, and the second side holds the grazing table, second bar and donut wall. Modelled from venue photos; sizes (about 32 × 30 m together) are estimates, not from floor plans.</p>
   <p class="hint">Drag to look around · scroll or pinch to zoom · W A S D to walk</p>
 </section>
 
@@ -84,7 +84,8 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   <button type="button" data-view="table">Guest table</button>
   <button type="button" data-view="barrels">Barrels</button>
   <button type="button" data-view="head">Sweetheart table</button>
-  <button type="button" data-view="lounge">Lounge</button>
+  <button type="button" data-view="lounge">Cocktail hour</button>
+  <button type="button" data-view="book">Guest book</button>
   <button type="button" data-view="donuts">Donut wall</button>
   <button type="button" data-view="bar">Bar</button>
   <button type="button" data-view="overview">Overview</button>
@@ -423,12 +424,26 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   [[-7.3, 1.8, 12], [7.3, 1.8, 12], [0, 2.6, 12.8]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffbf78, .9, 9, 2); L.position.set(x, y, z); scene.add(L); });
 
   // ---------- second side: cocktail lounge, grazing table and the donut wall ----------
-  // cocktail high-tops, cloth to the floor, a pillar candle and greenery on each
-  [[12.8, 10], [16, 11], [19.2, 10], [12.8, 4.5], [16, 5.5], [19.2, 4.5]].forEach(([x, z], k) => {
+  // cocktail hour by the left bar: high-tops among the barrels, cloth to the floor, a pillar candle and greenery on each
+  [[-7.6, 13.9], [-2.4, 10.0], [-2.6, 13.0], [2.4, 10.0], [2.6, 13.0], [4.6, 11.6]].forEach(([x, z], k) => {
     put('cloth', x, .55, z, .4, 1.1, .4);
     pillar(x, 1.1, z, .22, .12, .05);
     for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; put('plant', x + Math.cos(a) * .14, 1.11, z + Math.sin(a) * .14, .05, .01, .02, 0, -a, 0, GREEN[(i + k) % 4]); }
   });
+  // guest book table at the back of the room, facing in
+  { const gz = RL / 2 - .55;
+    box(M.cloth, 0, .385, gz, 1.6, .77, .6);
+    box(M.cushion, -.15, .79, gz - .02, .42, .03, .3); box(M.trim, -.15, .807, gz - .02, .02, .005, .3);
+    put('gold', .2, .79, gz + .05, .008, .02, .14, Math.PI / 2, .4, 0);
+    const bs = new THREE.Mesh(new THREE.PlaneGeometry(.5, .38), new THREE.MeshBasicMaterial({ map: canvasTex(400, 300, (g) => {
+      g.fillStyle = '#f6ecdc'; g.fillRect(0, 0, 400, 300); g.strokeStyle = '#c9a45c'; g.lineWidth = 10; g.strokeRect(8, 8, 384, 284);
+      g.fillStyle = '#4a3426'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = 'italic 600 64px "Cormorant Garamond", Georgia, serif'; g.fillText('Please sign', 200, 115);
+      g.font = 'italic 500 52px "Cormorant Garamond", Georgia, serif'; g.fillText('our guest book', 200, 190); }) }));
+    bs.position.set(.45, 1.02, gz + .1); bs.rotation.set(-.2, Math.PI, 0); scene.add(bs);
+    put('goldbox', .45, .9, gz + .14, .52, .02, .02);
+    pillar(-.65, .77, gz + .05, .26, .15, .05);
+    for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; put('plant', -.65 + Math.cos(a) * .12, .79, gz + .05 + Math.sin(a) * .08, .05, .012, .02, 0, -a, 0, i % 3 ? GREEN[i % 4] : BLOOM[1]); }
+  }
   // charcuterie grazing table along the middle of the second side
   { const gx = 16, z0 = -7.5, z1 = -1.5, gl = z1 - z0;
     box(M.cloth, gx, .385, (z0 + z1) / 2, 1.3, .77, gl);
@@ -492,7 +507,8 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     table: { p: [-2.0, 1.75, 5.2], t: [-3.6, .85, 3] },
     barrels: { p: [-0.8, 1.7, 13.6], t: [-8.2, 1.0, 10.4] },
     head: { p: [0, 1.55, -8.2], t: [0, 1.3, -14] },
-    lounge: { p: [9.5, 1.7, 11.5], t: [17.5, 1.0, -3] },
+    lounge: { p: [7.2, 1.9, 9.4], t: [-6, 1.0, 12.2] },
+    book: { p: [0.3, 1.55, 11.6], t: [0, 0.9, 15] },
     donuts: { p: [17.2, 1.6, 9.6], t: [XR, 1.4, 12] },
     bar: { p: [15.5, 1.7, -6.5], t: [XR, 1.2, -9.5] },
     overview: { p: [24, 13, 22], t: [6, 0, -1.5] },
@@ -527,7 +543,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     if (k >= 1) tween = null;
     return true;
   }
-  const TOUR = ['entrance', 'aisle', 'table', 'barrels', 'head', 'lounge', 'bar', 'donuts', 'overview'];
+  const TOUR = ['entrance', 'book', 'lounge', 'barrels', 'aisle', 'table', 'head', 'bar', 'donuts', 'overview'];
   let touring = false, tourIdx = 0, tourNext = 0;
   const tourBtn = document.getElementById('tour');
   function setTour(on) {
