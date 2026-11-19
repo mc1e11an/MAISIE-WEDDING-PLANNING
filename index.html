@@ -69,7 +69,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     <dt>170</dt><dd>guests</dd>
     <dt>15</dt><dd>round tables of 10 (6 ft)</dd>
     <dt>1</dt><dd>sweetheart table for Stewart &amp; Maisie</dd>
-    <dt>2</dt><dd>long tables of 12 along the dance floor (bridesmaids, groomsmen and friends)</dd>
+    <dt>2</dt><dd>long tables of 12 along the dance floor (two 8 ft tables each – bridesmaids, groomsmen and friends)</dd>
     <dt>2</dt><dd>bars, one on each side</dd>
     <dt>7</dt><dd>wine barrels, incl. card box at the entrance</dd>
   </dl>
@@ -417,16 +417,16 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   // wedding party: 8 bridesmaids and 8 groomsmen at two tables of eight either side of the dance floor
   // long rectangular tables running alongside the dance floor, chairs on both sides
   function longTable(cx, cz, len, perSide, seed) {
-    const r = rng(seed), T = .77, w = .9;
+    const r = rng(seed), T = .77, w = .76; // 30 in wide banquet tables
     box(M.cloth, cx, .385, cz, w, .77, len);
     for (let i = 0; i < perSide; i++) {
       const z = cz - len / 2 + (i + .5) * len / perSide;
       [-1, 1].forEach(sd => {
-        const px = cx + sd * .27;
+        const px = cx + sd * .23;
         put('glass', px, T + .006, z, .16, .01, .16); put('rim', px, T + .009, z, .16, .16, .16, Math.PI / 2); put('ceramic', px, T + .016, z, .12, .014, .12);
         put('napkin', px, T + .03, z, .12, .025, .05);
         put('glass', px + sd * -.12, T + .07, z + .17, .03, .14, .03);
-        chair(cx + sd * .85, z, sd * Math.PI / 2);
+        chair(cx + sd * .78, z, sd * Math.PI / 2);
       });
     }
     // eucalyptus garland down the middle with pillar candles and votives
@@ -436,8 +436,9 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     for (let i = 0; i < n; i++) { const z = cz - len / 2 + (i + .5) * len / n; pillar(cx, T, z, .26 + (i % 2) * .08, .15 + (i % 2) * .05, .05); }
     tableGlows.push(V(cx, T + .35, cz));
   }
-  longTable(DX - 4.7, -10.2, 3.7, 6, 401);
-  longTable(DX + 4.7, -10.2, 3.7, 6, 402);
+  // each is two 8 ft banquet tables end to end (16 ft, about 4.9 m), seating 12
+  longTable(DX - 4.7, -10.2, 4.88, 6, 401);
+  longTable(DX + 4.7, -10.2, 4.88, 6, 402);
   // Gail's backdrop behind the couple: white crushed velour panels with white voile in a messy swag style
   { const BW = 7.6, BH = 4.6, BZ = -RL / 2 + .25;
     const velour = new THREE.PlaneGeometry(BW, BH, 160, 1), vp = velour.attributes.position;
@@ -711,6 +712,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   requestAnimationFrame(frame);
 })();
 </script>
+
 
 
 
