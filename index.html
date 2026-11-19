@@ -309,17 +309,42 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   [[0, 4.2, 6], [0, 4.2, 0], [-6, 4.2, 3], [6, 4.2, 3]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffd6a3, .55, 14, 2); L.position.set(x, y, z); scene.add(L); });
 
   // ---------- chairs and tables ----------
-  // Crossback chair: local +z is its back, so ry turns it to face the table.
+  // Gail's gold chair (from the showroom photo): thin gold frame, thick white cushion, and a low back that curves
+  // around the seat with a lattice of crossing gold arcs. Local +z is its back, so ry turns it to face the table.
+  const _a = V(1, 0, 0), _d = new THREE.Vector3(), _sq = new THREE.Quaternion();
+  function rod(a, b, t, P) {   // a thin gold rod from point a to point b (chair-local), as one box instance
+    _d.subVectors(b, a); const len = _d.length(); _sq.setFromUnitVectors(_a, _d.normalize());
+    const m = new THREE.Matrix4().compose(a.clone().add(b).multiplyScalar(.5), _sq, V(len, t, t)).premultiply(P);
+    batches.wood.list.push(m); batches.wood.colors.push(null);
+  }
+  const CH = { R: .25, y0: .54, y1: .86, a0: -1.25, a1: 1.25, cz: -.02 };
+  const bp = (th, y) => V(CH.R * Math.sin(th), y, CH.cz + CH.R * Math.cos(th));   // a point on the curved back
   function chair(x, z, ry) {
-    const P = mat4(x, 0, z, ry);
-    [[-.19, -.19], [.19, -.19], [-.19, .19], [.19, .19]].forEach(([a, b]) => put('wood', a, .23, b, .028, .46, .028, 0, 0, 0, null, P));
-    put('wood', 0, .47, 0, .44, .04, .44, 0, 0, 0, null, P);
-    put('cushion', 0, .51, 0, .42, .05, .42, 0, 0, 0, null, P);
-    put('wood', -.19, .75, .2, .028, .56, .028, 0, 0, 0, null, P);
-    put('wood', .19, .75, .2, .028, .56, .028, 0, 0, 0, null, P);
-    put('wood', 0, 1.02, .2, .44, .035, .03, 0, 0, 0, null, P);
-    put('wood', 0, .76, .2, .58, .02, .018, 0, 0, .86, null, P);
-    put('wood', 0, .76, .2, .58, .02, .018, 0, 0, -.86, null, P);
+    const P = mat4(x, 0, z, ry), t = .016, N = 12;
+    // legs: front straight, back legs rising into the back posts, all slightly splayed
+    rod(V(-.2, .47, -.19), V(-.225, 0, -.22), t, P); rod(V(.2, .47, -.19), V(.225, 0, -.22), t, P);
+    const lb = bp(CH.a0, CH.y1), rb = bp(CH.a1, CH.y1);
+    rod(V(lb.x * 1.1, 0, lb.z + .03), lb, t, P); rod(V(rb.x * 1.1, 0, rb.z + .03), rb, t, P);
+    // seat frame and stretchers
+    rod(V(-.2, .47, -.19), V(.2, .47, -.19), t, P); rod(V(-.2, .47, -.19), V(lb.x, .47, lb.z), t, P); rod(V(.2, .47, -.19), V(rb.x, .47, rb.z), t, P);
+    rod(V(-.21, .18, -.2), V(.21, .18, -.2), t * .8, P);
+    // thick white cushion
+    put('cushion', 0, .515, .01, .43, .075, .42, 0, 0, 0, null, P);
+    // top rail and lower rail following the curve of the back
+    for (let i = 0; i < N; i++) {
+      const a = CH.a0 + (CH.a1 - CH.a0) * i / N, b = CH.a0 + (CH.a1 - CH.a0) * (i + 1) / N;
+      rod(bp(a, CH.y1), bp(b, CH.y1), t * 1.2, P); rod(bp(a, CH.y0), bp(b, CH.y0), t, P);
+    }
+    // the lattice: arcs swooping between the rails in both directions, crossing each other
+    for (let k = 0; k < 4; k++) [1, -1].forEach(dir => {
+      const s0 = CH.a0 + (CH.a1 - CH.a0) * k / 4, s1 = s0 + dir * .95, S = 6;
+      for (let i = 0; i < S; i++) {
+        const u0 = i / S, u1 = (i + 1) / S, th0 = s0 + (s1 - s0) * u0, th1 = s0 + (s1 - s0) * u1;
+        if (Math.min(th0, th1) < CH.a0 - .01 || Math.max(th0, th1) > CH.a1 + .01) continue;
+        const y0 = CH.y0 + (CH.y1 - CH.y0) * Math.sin(u0 * Math.PI / 2), y1 = CH.y0 + (CH.y1 - CH.y0) * Math.sin(u1 * Math.PI / 2);
+        rod(bp(th0, y0), bp(th1, y1), t * .8, P);
+      }
+    });
   }
   const tableGlows = [];
   // 6 ft round for ten: cloth, gold chargers, eucalyptus ring, pillar candles in glass, votives, petals.
