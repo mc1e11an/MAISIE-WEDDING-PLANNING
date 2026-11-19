@@ -73,7 +73,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     <dt>2</dt><dd>bars, one on each side</dd>
     <dt>7</dt><dd>wine barrels, incl. card box at the entrance</dd>
   </dl>
-  <p class="note">Both sides open: the folding partition is stacked back. The dining tables are centred across both sides, the entrance is midway along the left wall, cocktail hour is by the left bar, the guest book is at the back, and the right wall has the second bar and the donut wall. Modelled from venue photos; sizes (about 32 × 30 m together) are estimates, not from floor plans.</p>
+  <p class="note">Both sides open: the folding partition is stacked back. The dining tables are centred across both sides, the entrance is midway along the left wall, cocktail hour is by the left bar, the guest book is at the back, and the second bar is on the right wall. Modelled from venue photos; sizes (about 32 × 30 m together) are estimates, not from floor plans.</p>
   <p class="hint">Drag to look around · scroll or pinch to zoom · W A S D to walk</p>
 </section>
 
@@ -86,7 +86,6 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   <button type="button" data-view="head">Sweetheart table</button>
   <button type="button" data-view="lounge">Cocktail hour</button>
   <button type="button" data-view="book">Guest book</button>
-  <button type="button" data-view="donuts">Donut wall</button>
   <button type="button" data-view="bar">Bar</button>
   <button type="button" data-view="overview">Overview</button>
   <a href="renders.html" style="font:500 13px/1 var(--sans);color:#1d140c;background:var(--gold);border-radius:999px;padding:10px 14px;text-decoration:none">Photo renders</a>
@@ -523,7 +522,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   barrel(-9.1, 2.2, true);
   [[-7.3, 1.8, 12], [7.3, 1.8, 12], [0, 2.6, 12.8]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffbf78, .9, 9, 2); L.position.set(x, y, z); scene.add(L); });
 
-  // ---------- second side: cocktail lounge, grazing table and the donut wall ----------
+  // ---------- cocktail hour, guest book and lights on the second side ----------
   // cocktail hour by the left bar: high-tops among the barrels, cloth to the floor, a pillar candle and greenery on each
   [[-7.6, 13.9], [-2.4, 10.0], [-2.6, 13.0], [2.4, 10.0], [2.6, 13.0], [4.6, 11.6]].forEach(([x, z], k) => {
     put('cloth', x, .55, z, .4, 1.1, .4);
@@ -544,24 +543,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     pillar(-.65, .77, gz + .05, .26, .15, .05);
     for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; put('plant', -.65 + Math.cos(a) * .12, .79, gz + .05 + Math.sin(a) * .08, .05, .012, .02, 0, -a, 0, i % 3 ? GREEN[i % 4] : BLOOM[1]); }
   }
-  // the donut wall: a wooden board on the far wall with rows of glazed donuts on pegs
-  const donutGeo = new THREE.TorusGeometry(.055, .028, 10, 20), donutMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .55 });
-  const GLAZE = [C(0xf3c6d0), C(0x5a3424), C(0xf4ead8), C(0xe2a86b), C(0xc98ba8), C(0x8a5a3a)];
-  const dw = { x: XR - .12, z: 12, w: 2.6, h: 1.9, y: 1.55 };
-  box(M.darkwood, XR - .05, dw.y, dw.z, .06, dw.h, dw.w);
-  const donuts = new THREE.InstancedMesh(donutGeo, donutMat, 7 * 9), dm = new THREE.Matrix4(), dq = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
-  let di = 0;
-  for (let row = 0; row < 7; row++) for (let col = 0; col < 9; col++) {
-    dm.compose(V(dw.x - .02, dw.y - dw.h / 2 + .2 + row * .25, dw.z - dw.w / 2 + .2 + col * .275), dq, V(1, 1, 1));
-    donuts.setMatrixAt(di, dm); donuts.setColorAt(di, GLAZE[(row * 3 + col) % GLAZE.length]); di++;
-  }
-  scene.add(donuts);
-  const donutSign = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .4), new THREE.MeshBasicMaterial({ map: canvasTex(512, 146, (g) => {
-    g.fillStyle = '#f6ecdc'; g.fillRect(0, 0, 512, 146); g.strokeStyle = '#c9a45c'; g.lineWidth = 8; g.strokeRect(6, 6, 500, 134);
-    g.fillStyle = '#4a3426'; g.font = 'italic 600 84px "Cormorant Garamond", Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('Donuts', 256, 78); }) }));
-  donutSign.position.set(XR - .09, dw.y + dw.h / 2 + .3, dw.z); donutSign.rotation.y = -Math.PI / 2; scene.add(donutSign);
-  box(M.cloth, XR - .55, .45, dw.z, .7, .9, 2.4);
-  [[15.5, 3.6, 5], [15.5, 3.6, -4.5], [XR - 2.2, 2.6, dw.z]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffc888, .9, 11, 2); L.position.set(x, y, z); scene.add(L); });
+  [[15.5, 3.6, 5], [15.5, 3.6, -4.5], [XR - 2.2, 2.6, 12]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffc888, .9, 11, 2); L.position.set(x, y, z); scene.add(L); });
 
   // ---------- general light ----------
   scene.add(new THREE.HemisphereLight(C(0xffe1b8), C(0x2a1a10), .55));
@@ -601,7 +583,6 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     head: { p: [XM, 1.55, -8.2], t: [XM, 1.3, -14] },
     lounge: { p: [7.2, 1.9, 9.4], t: [-6, 1.0, 12.2] },
     book: { p: [0.3, 1.55, 11.6], t: [0, 0.9, 15] },
-    donuts: { p: [17.2, 1.6, 9.6], t: [XR, 1.4, 12] },
     bar: { p: [15.5, 1.7, -6.5], t: [XR, 1.2, -9.5] },
     overview: { p: [6, 31, 10.5], t: [6, 0, 0.5] },
   };
@@ -642,7 +623,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     if (k >= 1) tween = null;
     return true;
   }
-  const TOUR = ['entrance', 'book', 'lounge', 'barrels', 'aisle', 'table', 'head', 'bar', 'donuts', 'overview'];
+  const TOUR = ['entrance', 'book', 'lounge', 'barrels', 'aisle', 'table', 'head', 'bar', 'overview'];
   let touring = false, tourIdx = 0, tourNext = 0;
   const tourBtn = document.getElementById('tour');
   function setTour(on) {
@@ -712,6 +693,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   requestAnimationFrame(frame);
 })();
 </script>
+
 
 
 
