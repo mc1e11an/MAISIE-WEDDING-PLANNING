@@ -553,18 +553,34 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; put('plant', x + Math.cos(a) * .14, 1.11, z + Math.sin(a) * .14, .05, .01, .02, 0, -a, 0, GREEN[(i + k) % 4]); }
   });
   // guest book table at the back of the room, facing in
-  { const gz = RL / 2 - .55;
-    box(M.cloth, 0, .385, gz, 1.6, .77, .6);
+  // an 8 ft by 30 in table with Gail's three-tier cylinder candles and a baby's breath and white rose garland
+  { const gz = RL / 2 - .5, GL = 2.44, GW = .76, T = .77;
+    box(M.cloth, 0, .385, gz, GL, .77, GW);
     box(M.cushion, -.15, .79, gz - .02, .42, .03, .3); box(M.trim, -.15, .807, gz - .02, .02, .005, .3);
     put('gold', .2, .79, gz + .05, .008, .02, .14, Math.PI / 2, .4, 0);
+    // three-tier cylinder vases with floating candles at each end
+    [-.92, .92].forEach(ex => [[0, .45, -.06], [.13, .34, .07], [-.12, .25, .08]].forEach(([dx, h, dz]) => {
+      const x = ex + dx, z = gz + dz;
+      put('glass', x, T + h / 2, z, .065, h, .065);
+      put('candle', x, T + h * .62, z, .055, .05, .055);
+      flame(x, T + h * .62 + .045, z, .8);
+      for (let i = 0; i < 7; i++) { const a = i / 7 * Math.PI * 2; put('plant', x + Math.cos(a) * .08, T + .02, z + Math.sin(a) * .08, .03, .02, .03, 0, 0, 0, i % 2 ? BLOOM[3] : GREEN[1]); }
+    }));
+    // baby's breath and white rose garland along the front edge, draping partway down the cloth
+    { const r = rng(55);
+      for (let i = 0; i < 150; i++) { const x = -GL / 2 + r() * GL; put('plant', x, T + .02 + r() * .06, gz - GW / 2 + .05 + r() * .08, .016, .016, .016, 0, 0, 0, C(0xffffff)); }
+      for (let i = 0; i < 22; i++) { const x = -GL / 2 + .1 + r() * (GL - .2); put('plant', x, T + .05, gz - GW / 2 + .08, .045, .04, .045, 0, 0, 0, BLOOM[3]); }
+      for (let i = 0; i < 40; i++) { const x = -GL / 2 + r() * GL; put('plant', x, T + .03, gz - GW / 2 + .06 + r() * .06, .05, .012, .02, 0, r() * 3, 0, GREEN[i % 4]); }
+      for (let i = 0; i < 160; i++) { const x = -GL / 2 + r() * GL, y = T - Math.pow(r(), 2) * .2; put('plant', x, y, gz - GW / 2 - .02, .014, .014, .014, 0, 0, 0, C(0xffffff)); }
+      for (let i = 0; i < 50; i++) { const x = -GL / 2 + r() * GL; put('plant', x, T - r() * .16, gz - GW / 2 - .02, .018, .05, .008, 0, 0, r() - .5, GREEN[i % 4]); }
+      for (let i = 0; i < 12; i++) { const x = -GL / 2 + .1 + r() * (GL - .2); put('plant', x, T - .05 - r() * .1, gz - GW / 2 - .03, .04, .04, .035, 0, 0, 0, BLOOM[3]); }
+    }
     const bs = new THREE.Mesh(new THREE.PlaneGeometry(.5, .38), new THREE.MeshBasicMaterial({ map: canvasTex(400, 300, (g) => {
       g.fillStyle = '#f6ecdc'; g.fillRect(0, 0, 400, 300); g.strokeStyle = '#c9a45c'; g.lineWidth = 10; g.strokeRect(8, 8, 384, 284);
       g.fillStyle = '#4a3426'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = 'italic 600 64px "Cormorant Garamond", Georgia, serif'; g.fillText('Please sign', 200, 115);
       g.font = 'italic 500 52px "Cormorant Garamond", Georgia, serif'; g.fillText('our guest book', 200, 190); }) }));
     bs.position.set(.45, 1.02, gz + .1); bs.rotation.set(-.2, Math.PI, 0); scene.add(bs);
     put('goldbox', .45, .9, gz + .14, .52, .02, .02);
-    pillar(-.65, .77, gz + .05, .26, .15, .05);
-    for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; put('plant', -.65 + Math.cos(a) * .12, .79, gz + .05 + Math.sin(a) * .08, .05, .012, .02, 0, -a, 0, i % 3 ? GREEN[i % 4] : BLOOM[1]); }
   }
   [[15.5, 3.6, 5], [15.5, 3.6, -4.5], [XR - 2.2, 2.6, 12]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffc888, .9, 11, 2); L.position.set(x, y, z); scene.add(L); });
 
