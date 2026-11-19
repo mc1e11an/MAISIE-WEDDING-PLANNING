@@ -439,8 +439,8 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   longTable(DX - 4.7, -10.2, 4.88, 6, 401);
   longTable(DX + 4.7, -10.2, 4.88, 6, 402);
   // Gail's backdrop behind the couple: white crushed velour panels with white voile in a messy swag style
-  { const BW = 7.6, BH = 4.6, BZ = -RL / 2 + .25;
-    const velour = new THREE.PlaneGeometry(BW, BH, 160, 1), vp = velour.attributes.position;
+  { const BW = 9.14, BH = 4.6, BZ = -RL / 2 + .25; // 30 ft wide, per Gail
+    const velour = new THREE.PlaneGeometry(BW, BH, 190, 1), vp = velour.attributes.position;
     for (let i = 0; i < vp.count; i++) { const x = vp.getX(i); vp.setZ(i, Math.sin(x * 9) * .05 + Math.sin(x * 23) * .015); }
     velour.computeVertexNormals();
     const bd = new THREE.Mesh(velour, new THREE.MeshStandardMaterial({ color: C(0xf8f4ee), roughness: .95, emissive: C(0x2c1a0c), emissiveIntensity: .7 }));
@@ -693,6 +693,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   requestAnimationFrame(frame);
 })();
 </script>
+
 
 
 
