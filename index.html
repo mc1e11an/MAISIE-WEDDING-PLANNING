@@ -167,7 +167,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     potlight: new THREE.MeshBasicMaterial({ color: C(0xfff1d8) }),
     wood: new THREE.MeshStandardMaterial({ color: C(0x7b5132), roughness: .75 }),
     darkwood: new THREE.MeshStandardMaterial({ color: C(0x4a2f1c), roughness: .8 }),
-    cloth: new THREE.MeshStandardMaterial({ color: C(0xf4ebdd), roughness: .95, emissive: C(0x1a1008) }),
+    cloth: new THREE.MeshStandardMaterial({ color: C(0xf3eadb), roughness: .42, metalness: .05, emissive: C(0x1a1008) }),
     sheer: new THREE.MeshStandardMaterial({ color: C(0xfbf4ea), roughness: 1, transparent: true, opacity: .78, side: THREE.DoubleSide, emissive: C(0x3a2410), emissiveIntensity: .5, depthWrite: false }),
     gold: new THREE.MeshStandardMaterial({ color: C(0xd2ab62), metalness: .85, roughness: .32, emissive: C(0x2a1a06) }),
     glass: new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: .16, roughness: .05, depthWrite: false }),
@@ -176,7 +176,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     plant: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .85 }),
     ceramic: new THREE.MeshStandardMaterial({ color: C(0xfbf6ee), roughness: .35 }),
     napkin: new THREE.MeshStandardMaterial({ color: C(0xa98a74), roughness: .95 }),
-    cushion: new THREE.MeshStandardMaterial({ color: C(0xf1e6d6), roughness: .9 }),
+    cushion: new THREE.MeshStandardMaterial({ color: C(0xf7f4ee), roughness: .85 }),
     hoop: new THREE.MeshStandardMaterial({ color: C(0x3a3632), metalness: .6, roughness: .5 }),
     barrel: new THREE.MeshStandardMaterial({ map: staveTex, roughness: .8 }),
     barreltop: new THREE.MeshStandardMaterial({ color: C(0xb08458), roughness: .85 }),
@@ -195,7 +195,9 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   };
   const batches = {};
   function batch(name, geo, mat) { batches[name] = { geo, mat, list: [], colors: [] }; }
-  batch('wood', G.box, M.wood); batch('cushion', G.box, M.cushion); batch('napkin', G.box, M.napkin);
+  // chair frames are Gail's gold chairs; chargers are clear with a thin gold rim
+  batch('wood', G.box, new THREE.MeshStandardMaterial({ color: C(0xe2c27c), metalness: .45, roughness: .3, emissive: C(0x4a3410), emissiveIntensity: .6 })); batch('cushion', G.box, M.cushion); batch('napkin', G.box, M.napkin);
+  batch('rim', new THREE.TorusGeometry(1, .03, 6, 40), M.gold);
   batch('gold', G.cyl, M.gold); batch('goldbox', G.box, M.gold); batch('ceramic', G.cyl, M.ceramic);
   batch('glass', G.cyl, M.glass); batch('candle', G.cyl, M.candle); batch('flame', G.cone, M.flame);
   batch('plant', G.sph, M.plant); batch('crystal', G.oct, M.crystal); batch('cloth', G.cyl, M.cloth);
@@ -310,14 +312,14 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   // Crossback chair: local +z is its back, so ry turns it to face the table.
   function chair(x, z, ry) {
     const P = mat4(x, 0, z, ry);
-    [[-.19, -.19], [.19, -.19], [-.19, .19], [.19, .19]].forEach(([a, b]) => put('wood', a, .23, b, .04, .46, .04, 0, 0, 0, null, P));
+    [[-.19, -.19], [.19, -.19], [-.19, .19], [.19, .19]].forEach(([a, b]) => put('wood', a, .23, b, .028, .46, .028, 0, 0, 0, null, P));
     put('wood', 0, .47, 0, .44, .04, .44, 0, 0, 0, null, P);
-    put('cushion', 0, .505, 0, .39, .035, .39, 0, 0, 0, null, P);
-    put('wood', -.19, .75, .2, .04, .56, .04, 0, 0, 0, null, P);
-    put('wood', .19, .75, .2, .04, .56, .04, 0, 0, 0, null, P);
-    put('wood', 0, 1.02, .2, .46, .06, .045, 0, 0, 0, null, P);
-    put('wood', 0, .76, .2, .58, .03, .02, 0, 0, .86, null, P);
-    put('wood', 0, .76, .2, .58, .03, .02, 0, 0, -.86, null, P);
+    put('cushion', 0, .51, 0, .42, .05, .42, 0, 0, 0, null, P);
+    put('wood', -.19, .75, .2, .028, .56, .028, 0, 0, 0, null, P);
+    put('wood', .19, .75, .2, .028, .56, .028, 0, 0, 0, null, P);
+    put('wood', 0, 1.02, .2, .44, .035, .03, 0, 0, 0, null, P);
+    put('wood', 0, .76, .2, .58, .02, .018, 0, 0, .86, null, P);
+    put('wood', 0, .76, .2, .58, .02, .018, 0, 0, -.86, null, P);
   }
   const tableGlows = [];
   // 6 ft round for ten: cloth, gold chargers, eucalyptus ring, pillar candles in glass, votives, petals.
@@ -327,7 +329,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     put('cloth', cx, .02, cz, 1.0, .04, 1.0);
     for (let i = 0; i < n; i++) {
       const a = (i + .5) / n * Math.PI * 2, s = Math.sin(a), c = Math.cos(a);
-      put('gold', cx + s * .7, T + .006, cz + c * .7, .16, .012, .16);
+      put('glass', cx + s * .7, T + .006, cz + c * .7, .16, .01, .16); put('rim', cx + s * .7, T + .009, cz + c * .7, .16, .16, .16, Math.PI / 2);
       put('ceramic', cx + s * .7, T + .016, cz + c * .7, .12, .014, .12);
       put('napkin', cx + s * .7, T + .03, cz + c * .7, .05, .025, .12, 0, a, 0);
       put('plant', cx + s * .7, T + .046, cz + c * .7, .012, .012, .012, 0, 0, 0, GREEN[2]);
@@ -383,7 +385,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   // ---------- sweetheart table for Stewart and Maisie, backdrop and sign ----------
   const HZ = -12.7, SW = 1.9;
   box(M.cloth, DX, .385, HZ, SW, .77, .85);
-  [-.45 + DX, .45 + DX].forEach(x => { chair(x, HZ - .75, Math.PI); put('gold', x, .776, HZ - .15, .16, .012, .16); put('ceramic', x, .786, HZ - .15, .12, .014, .12); });
+  [-.45 + DX, .45 + DX].forEach(x => { chair(x, HZ - .75, Math.PI); put('glass', x, .776, HZ - .15, .16, .01, .16); put('rim', x, .779, HZ - .15, .16, .16, .16, Math.PI / 2); put('ceramic', x, .786, HZ - .15, .12, .014, .12); });
   { const r = rng(5); for (let i = 0; i < 120; i++) { const x = DX - SW / 2 - .05 + r() * (SW + .1); put('plant', x, .8 + r() * .14, HZ + .3 + r() * .12, .05 + r() * .03, .04 + r() * .02, .05, 0, r() * 3, 0, i % 3 ? GREEN[i % 4] : BLOOM[i % 4]); }
     for (let i = 0; i < 70; i++) { const x = DX - SW / 2 + r() * SW; put('plant', x, .74 - r() * .55, HZ + .44, .03, .08, .03, 0, 0, r() - .5, GREEN[i % 4]); } }
   [-.75, 0, .75].forEach((x, i) => pillar(x + DX, .77, HZ + .12, .3 + (i % 2) * .1, .16 + (i % 2) * .06, .055));
@@ -396,7 +398,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
       const z = cz - len / 2 + (i + .5) * len / perSide;
       [-1, 1].forEach(sd => {
         const px = cx + sd * .27;
-        put('gold', px, T + .006, z, .16, .012, .16); put('ceramic', px, T + .016, z, .12, .014, .12);
+        put('glass', px, T + .006, z, .16, .01, .16); put('rim', px, T + .009, z, .16, .16, .16, Math.PI / 2); put('ceramic', px, T + .016, z, .12, .014, .12);
         put('napkin', px, T + .03, z, .12, .025, .05);
         put('glass', px + sd * -.12, T + .07, z + .17, .03, .14, .03);
         chair(cx + sd * .85, z, sd * Math.PI / 2);
@@ -411,11 +413,43 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   }
   longTable(DX - 4.7, -10.2, 3.7, 6, 401);
   longTable(DX + 4.7, -10.2, 3.7, 6, 402);
-  // draped backdrop with folds
-  { const geo = new THREE.PlaneGeometry(7, 4.6, 90, 1); const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getX(i) * 7) * .07);
-    geo.computeVertexNormals(); const bd = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: C(0xf7efe2), roughness: 1, emissive: C(0x2c1a0c) }));
-    bd.position.set(DX, 2.3, -RL / 2 + .25); scene.add(bd); }
+  // Gail's backdrop behind the couple: white crushed velour panels with white voile in a messy swag style
+  { const BW = 7.6, BH = 4.6, BZ = -RL / 2 + .25;
+    const velour = new THREE.PlaneGeometry(BW, BH, 160, 1), vp = velour.attributes.position;
+    for (let i = 0; i < vp.count; i++) { const x = vp.getX(i); vp.setZ(i, Math.sin(x * 9) * .05 + Math.sin(x * 23) * .015); }
+    velour.computeVertexNormals();
+    const bd = new THREE.Mesh(velour, new THREE.MeshStandardMaterial({ color: C(0xf8f4ee), roughness: .95, emissive: C(0x2c1a0c), emissiveIntensity: .7 }));
+    bd.position.set(DX, BH / 2, BZ); scene.add(bd);
+    const voile = new THREE.MeshStandardMaterial({ color: C(0xfffcf7), roughness: 1, transparent: true, opacity: .62, side: THREE.DoubleSide, emissive: C(0x3a2410), emissiveIntensity: .45, depthWrite: false });
+    // swags across the top: two staggered layers, each a sheer drop that sags in the middle
+    [[4, .18, .55, 0], [3, .3, .8, .5]].forEach(([n, dz, sagMax, shift]) => {
+      const sw = BW / n;
+      for (let k = 0; k < n; k++) {
+        const g = new THREE.PlaneGeometry(sw * 1.08, 1, 36, 8), p = g.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          const u = p.getX(i) / (sw * 1.08) + .5, v = .5 - p.getY(i), depth = .22 + sagMax * Math.sin(Math.PI * u);
+          p.setY(i, -v * depth); p.setZ(i, Math.sin(u * 26 + k) * .035 + v * .08 * Math.sin(Math.PI * u));
+        }
+        g.computeVertexNormals();
+        const m = new THREE.Mesh(g, voile); m.position.set(DX - BW / 2 + sw * (k + .5) + (shift - .5) * 0 + (n === 3 ? 0 : 0), BH - .05, BZ + dz); scene.add(m);
+      }
+    });
+    // voile legs at each side, gathered with a tie-back and pooling on the floor
+    [-1, 1].forEach(sd => {
+      const g = new THREE.PlaneGeometry(1.3, BH, 30, 46), p = g.attributes.position, tie = 1.5;
+      for (let i = 0; i < p.count; i++) {
+        const x = p.getX(i), y = p.getY(i) + BH / 2, f = y < tie ? .3 + .7 * Math.pow((tie - y) / tie, .8) : .3 + .7 * Math.pow((y - tie) / (BH - tie), .7);
+        p.setX(i, x * f); p.setY(i, y - BH / 2); p.setZ(i, Math.sin(x * 14) * .05 * f + (y < .25 ? (.25 - y) * .6 : 0));
+      }
+      g.computeVertexNormals();
+      const m = new THREE.Mesh(g, voile); m.position.set(DX + sd * (BW / 2 - .55), BH / 2, BZ + .35); scene.add(m);
+      put('goldbox', DX + sd * (BW / 2 - .55), tie, BZ + .42, .42, .05, .05);
+    });
+    // a centre voile drop gathered behind the couple, framing the sign
+    { const g = new THREE.PlaneGeometry(1.6, 2.2, 30, 20), p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) { const x = p.getX(i), y = p.getY(i); p.setX(i, x * (.45 + .55 * (1.1 - y) / 2.2)); p.setZ(i, Math.sin(x * 12) * .04); }
+      g.computeVertexNormals(); const m = new THREE.Mesh(g, voile); m.position.set(DX, BH - 1.2, BZ + .1); m.renderOrder = 1; scene.add(m); }
+  }
   // floral stands either side
   [DX - 3.3, DX + 3.3].forEach((x, k) => { const r = rng(20 + k); put('gold', x, .8, HZ - .6, .03, 1.6, .03); put('gold', x, .02, HZ - .6, .22, .04, .22);
     for (let i = 0; i < 90; i++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * .55, y = 1.75 + (r() - .5) * .7; put('plant', x + Math.cos(a) * d, y - (d > .4 ? r() * .4 : 0), HZ - .6 + Math.sin(a) * d * .6, .07 + r() * .04, .06, .07, 0, r() * 3, 0, i % 3 ? BLOOM[i % 4] : GREEN[i % 4]); } });
@@ -431,7 +465,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   drawSign();
   if (document.fonts && document.fonts.load) document.fonts.load('italic 500 210px "Cormorant Garamond"').then(drawSign, () => {});
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.06), new THREE.MeshBasicMaterial({ map: signTex, transparent: true, depthWrite: false }));
-  sign.position.set(DX, 3.25, -RL / 2 + .45); scene.add(sign);
+  sign.position.set(DX, 3.0, -RL / 2 + .7); sign.renderOrder = 6; scene.add(sign);
   [[-2.6, 1.6, -13.2], [2.6, 1.6, -13.2], [0, 3.2, -13.6]].forEach(([x, y, z], i) => { const L = new THREE.PointLight(0xffc27a, i === 2 ? .9 : 1.2, 9, 2); L.position.set(x + DX, y, z); scene.add(L); });
 
   // ---------- wine barrels ----------
@@ -652,6 +686,10 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   requestAnimationFrame(frame);
 })();
 </script>
+
+
+
+
 
 
 
