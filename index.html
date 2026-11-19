@@ -1,5 +1,4 @@
 ﻿<!doctype html>
-<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta charset="utf-8">
 <title>Hellenic Centre Wedding Model</title>
@@ -20,7 +19,8 @@
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: dark;
 }
-html, body { height: 100%; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
 body { background: var(--bg); color: var(--fg); font-family: var(--sans); overflow: hidden; }
 #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; outline: none; }
 #c.drag { cursor: grabbing; }
@@ -68,10 +68,11 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   <dl class="stats">
     <dt>150</dt><dd>guests</dd>
     <dt>15</dt><dd>round tables of 10 (6 ft)</dd>
-    <dt>1</dt><dd>head table with draped backdrop</dd>
+    <dt>1</dt><dd>sweetheart table for Stewart &amp; Maisie</dd>
+    <dt>2</dt><dd>wedding party tables of 8 (bridesmaids, groomsmen)</dd>
     <dt>7</dt><dd>wine barrels, incl. card box at the door</dd>
   </dl>
-  <p class="note">Hall modelled from venue photos: off-white walls, drop ceiling with pot lights, wood-look floor, brass chandelier, partition wall and bar window. Sizes (about 20 × 30 m) are estimates, not from floor plans.</p>
+  <p class="note">Both sides open: the folding partition is stacked back, and the second side holds a cocktail lounge, grazing table and donut wall. Modelled from venue photos; sizes (about 32 × 30 m together) are estimates, not from floor plans.</p>
   <p class="hint">Drag to look around · scroll or pinch to zoom · W A S D to walk</p>
 </section>
 
@@ -81,7 +82,9 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   <button type="button" data-view="aisle">Aisle</button>
   <button type="button" data-view="table">Guest table</button>
   <button type="button" data-view="barrels">Barrels</button>
-  <button type="button" data-view="head">Head table</button>
+  <button type="button" data-view="head">Sweetheart table</button>
+  <button type="button" data-view="lounge">Lounge</button>
+  <button type="button" data-view="donuts">Donut wall</button>
   <button type="button" data-view="overview">Overview</button>
   <a href="renders.html" style="font:500 13px/1 var(--sans);color:#1d140c;background:var(--gold);border-radius:999px;padding:10px 14px;text-decoration:none">Photo renders</a>
 </nav>
@@ -218,30 +221,31 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   const GREEN = [C(0x7f9a6f), C(0x5f7a55), C(0x9fb08c), C(0x6b8a62)];
   const BLOOM = [C(0xf4e8d6), C(0xe8b79a), C(0xead0c4), C(0xf7efe4)];
 
-  // ---------- the room, from the venue photos: off-white walls, drop ceiling, wood-look floor (about 20 x 30 m) ----------
-  const RW = 20, RL = 30, RH = 5;
-  const shell = new THREE.Mesh(new THREE.BoxGeometry(RW, RH, RL), [M.wall, M.wall, M.ceiling, M.floor, M.wall, M.wall]);
+  // ---------- the room, from the venue photos: off-white walls, drop ceiling, wood-look floor ----------
+  // Both sides open: the main hall (x -10..10) plus the second room past the folding partition (x 10..22). Sizes are estimates.
+  const RW = 20, RL = 30, RH = 5, XL = -10, XR = 22, XM = (XL + XR) / 2, RWT = XR - XL, PX = 10;
+  const shell = new THREE.Mesh(new THREE.BoxGeometry(RWT, RH, RL), [M.wall, M.wall, M.ceiling, M.floor, M.wall, M.wall]);
   shell.material.forEach(m => { m.side = THREE.BackSide; });
-  shell.position.y = RH / 2; scene.add(shell);
+  shell.position.set(XM, RH / 2, 0); scene.add(shell);
   const box = (mat, x, y, z, w, h, d) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); scene.add(m); return m; };
   // white baseboards
-  box(M.trim, -RW / 2 + .02, .07, 0, .04, .14, RL); box(M.trim, RW / 2 - .02, .07, 0, .04, .14, RL);
-  box(M.trim, 0, .07, -RL / 2 + .02, RW, .14, .04); box(M.trim, 0, .07, RL / 2 - .02, RW, .14, .04);
+  box(M.trim, XL + .02, .07, 0, .04, .14, RL); box(M.trim, XR - .02, .07, 0, .04, .14, RL);
+  box(M.trim, XM, .07, -RL / 2 + .02, RWT, .14, .04); box(M.trim, XM, .07, RL / 2 - .02, RWT, .14, .04);
   // ceiling bulkheads running the length of the room
   // overhead things hide when the camera rises above the ceiling, so the overview reads as a cutaway
   const overhead = [];
-  [-4.2, 4.2].forEach(x => { overhead.push(box(M.trim, x, RH - .25, 0, 1.4, .5, RL)); });
-  overhead.push(box(M.trim, 0, RH - .12, -RL / 2 + .7, RW, .24, 1.4));
+  [-4.2, 4.2, 16].forEach(x => { overhead.push(box(M.trim, x, RH - .25, 0, 1.4, .5, RL)); });
+  overhead.push(box(M.trim, XM, RH - .12, -RL / 2 + .7, RWT, .24, 1.4));
   // recessed pot lights in the ceiling grid
   const pots = [];
-  for (let z = -12; z <= 12; z += 4) [-7.5, -1.6, 1.6, 7.5].forEach(x => pots.push(V(x, RH - .01, z + (Math.abs(x) > 5 ? 0 : 2))));
+  for (let z = -12; z <= 12; z += 4) [-7.5, -1.6, 1.6, 7.5, 13, 19].forEach(x => pots.push(V(x, RH - .01, z + (Math.abs(x) > 5 && x < 12 ? 0 : 2))));
   pots.forEach(p => { const d = new THREE.Mesh(new THREE.CircleGeometry(.12, 20), M.potlight); d.rotation.x = Math.PI / 2; d.position.copy(p); scene.add(d); });
-  // wall sconces on the side walls
+  // wall sconces on both outer walls
   const sconces = [];
-  [-1, 1].forEach(sd => [-9, -3, 3, 9].forEach(z => { if (sd > 0) return; box(M.trim, sd * (RW / 2 - .06), 2.6, z, .12, .3, .22); sconces.push(V(sd * (RW / 2 - .2), 2.65, z)); }));
-  // operable partition wall down the right side: tall panels with seams
-  for (let z = -RL / 2 + 1.2; z < RL / 2; z += 1.2) box(M.steel, RW / 2 - .03, RH / 2, z, .03, RH, .03);
-  box(M.trim, RW / 2 - .1, RH - .1, 0, .2, .2, RL);
+  [[XL, 1], [XR, -1]].forEach(([wx, sd]) => [-9, -3, 3, 9].forEach(z => { box(M.trim, wx + sd * .06, 2.6, z, .12, .3, .22); sconces.push(V(wx + sd * .2, 2.65, z)); }));
+  // the folding partition, opened: its panels stacked into a pocket by the far wall, the ceiling track left above
+  for (let i = 0; i < 9; i++) box(i % 2 ? M.steel : M.wall, PX + (i - 4) * .09, RH / 2 - .05, -RL / 2 + .75, .08, RH - .1, 1.2);
+  overhead.push(box(M.trim, PX, RH - .1, 0, .3, .2, RL));
   // far wall: exit door, double doors, the bar window with its dark cabinet, kitchen doors
   const door = (x, w) => { box(M.trim, x, 1.12, -RL / 2 + .04, w + .14, 2.3, .06); box(M.steel, x, 1.05, -RL / 2 + .07, w, 2.1, .04); };
   door(-7.5, 1.0); door(7.2, 1.7);
@@ -250,22 +254,27 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   // front wall: double doors in from the lobby
   door(-1, 1.8);
   box(M.steel, -1, 1.05, RL / 2 - .07, 1.8, 2.1, .04); box(M.trim, -1, 1.12, RL / 2 - .04, 1.94, 2.3, .06);
+  // second side: its own doors to the lobby and an exit on the far wall
+  box(M.steel, 16, 1.05, RL / 2 - .07, 1.8, 2.1, .04); box(M.trim, 16, 1.12, RL / 2 - .04, 1.94, 2.3, .06);
+  door(19.5, 1.0);
 
   // decorator's draping hangs in bays along the room
   const crossZ = [-12, -6, 0, 6, 12];
 
   // sheer fabric billowing between the cross beams, with lights strung along each low line
   const bulbs = [];
+  const sag = (x, u) => .7 * Math.sin(Math.PI * u) * (.72 + .28 * Math.cos(x * .95));
   for (let b = 0; b < crossZ.length - 1; b++) {
     const z0 = crossZ[b], z1 = crossZ[b + 1], len = z1 - z0;
-    const geo = new THREE.PlaneGeometry(RW, len, 60, 18); geo.rotateX(-Math.PI / 2);
-    const pos = geo.attributes.position;
-    const sag = (x, u) => .7 * Math.sin(Math.PI * u) * (.72 + .28 * Math.cos(x * .95));
-    for (let i = 0; i < pos.count; i++) { const x = pos.getX(i), u = (pos.getZ(i) + len / 2) / len; pos.setY(i, RH - .38 - sag(x, u)); }
-    geo.computeVertexNormals();
-    const sheet = new THREE.Mesh(geo, M.sheer); sheet.position.z = (z0 + z1) / 2; scene.add(sheet); overhead.push(sheet);
-    for (let x = -9.6; x <= 9.6; x += .42) bulbs.push(V(x, RH - .45 - sag(x, .5), (z0 + z1) / 2));
-    [-7.5, -2.5, 2.5, 7.5].forEach(x => { for (let u = .05; u < 1; u += .09) bulbs.push(V(x, RH - .45 - sag(x, u) * .98, z0 + u * len)); });
+    [[XL, PX, [-7.5, -2.5, 2.5, 7.5]], [PX, XR, [13, 19]]].forEach(([a, c, strands]) => {
+      const w = c - a, geo = new THREE.PlaneGeometry(w, len, Math.round(w * 3), 18); geo.rotateX(-Math.PI / 2);
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) { const x = pos.getX(i) + (a + c) / 2, u = (pos.getZ(i) + len / 2) / len; pos.setY(i, RH - .38 - sag(x, u)); }
+      geo.computeVertexNormals();
+      const sheet = new THREE.Mesh(geo, M.sheer); sheet.position.set((a + c) / 2, 0, (z0 + z1) / 2); scene.add(sheet); overhead.push(sheet);
+      for (let x = a + .4; x <= c - .4; x += .42) bulbs.push(V(x, RH - .45 - sag(x, .5), (z0 + z1) / 2));
+      strands.forEach(x => { for (let u = .05; u < 1; u += .09) bulbs.push(V(x, RH - .45 - sag(x, u) * .98, z0 + u * len)); });
+    });
   }
   // the hall's brass candle-arm chandelier, toward the far end
   const chandZ = [-8];
@@ -297,12 +306,12 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   }
   const tableGlows = [];
   // 6 ft round for ten: cloth, gold chargers, eucalyptus ring, pillar candles in glass, votives, petals.
-  function roundTable(cx, cz, seed) {
-    const r = rng(seed), T = .77;
+  function roundTable(cx, cz, seed, seats) {
+    const r = rng(seed), T = .77, n = seats || 10;
     put('cloth', cx, .385, cz, .93, .77, .93);
     put('cloth', cx, .02, cz, 1.0, .04, 1.0);
-    for (let i = 0; i < 10; i++) {
-      const a = (i + .5) / 10 * Math.PI * 2, s = Math.sin(a), c = Math.cos(a);
+    for (let i = 0; i < n; i++) {
+      const a = (i + .5) / n * Math.PI * 2, s = Math.sin(a), c = Math.cos(a);
       put('gold', cx + s * .7, T + .006, cz + c * .7, .16, .012, .16);
       put('ceramic', cx + s * .7, T + .016, cz + c * .7, .12, .014, .12);
       put('napkin', cx + s * .7, T + .03, cz + c * .7, .05, .025, .12, 0, a, 0);
@@ -337,14 +346,16 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   const runner = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 21), M.runner); runner.rotation.x = -Math.PI / 2; runner.position.set(0, .006, 3.8); scene.add(runner);
   const dance = new THREE.Mesh(new THREE.PlaneGeometry(6.5, 4.2), M.dance); dance.rotation.x = -Math.PI / 2; dance.position.set(0, .004, -9.4); scene.add(dance);
 
-  // ---------- head table, backdrop and sign ----------
-  const HZ = -12.7;
-  put('cloth', 0, .385, HZ, 7.2, .77, .95);
-  [-1, 1].forEach(sd => put('cloth', sd * 3.6, .385, HZ, .02, .77, .95));
-  for (let i = 0; i < 10; i++) { const x = -2.95 + i * .655; chair(x, HZ - .85, Math.PI); put('gold', x, .776, HZ - .2, .16, .012, .16); put('ceramic', x, .786, HZ - .2, .12, .014, .12); }
-  { const r = rng(5); for (let i = 0; i < 260; i++) { const x = -3.55 + r() * 7.1; put('plant', x, .8 + r() * .12, HZ + .33 + r() * .12, .05 + r() * .03, .04 + r() * .02, .05, 0, r() * 3, 0, i % 3 ? GREEN[i % 4] : BLOOM[i % 4]); }
-    for (let i = 0; i < 60; i++) { const x = -3.55 + r() * 7.1; put('plant', x, .74 - r() * .4, HZ + .48, .03, .08, .03, 0, 0, r() - .5, GREEN[i % 4]); } }
-  [-3, -2, -1, 0, 1, 2, 3].forEach((x, i) => pillar(x + .2, .77, HZ + .1, .3 + (i % 3) * .08, .16 + (i % 3) * .05, .055));
+  // ---------- sweetheart table for Stewart and Maisie, backdrop and sign ----------
+  const HZ = -12.7, SW = 1.9;
+  box(M.cloth, 0, .385, HZ, SW, .77, .85);
+  [-.45, .45].forEach(x => { chair(x, HZ - .75, Math.PI); put('gold', x, .776, HZ - .15, .16, .012, .16); put('ceramic', x, .786, HZ - .15, .12, .014, .12); });
+  { const r = rng(5); for (let i = 0; i < 120; i++) { const x = -SW / 2 - .05 + r() * (SW + .1); put('plant', x, .8 + r() * .14, HZ + .3 + r() * .12, .05 + r() * .03, .04 + r() * .02, .05, 0, r() * 3, 0, i % 3 ? GREEN[i % 4] : BLOOM[i % 4]); }
+    for (let i = 0; i < 70; i++) { const x = -SW / 2 + r() * SW; put('plant', x, .74 - r() * .55, HZ + .44, .03, .08, .03, 0, 0, r() - .5, GREEN[i % 4]); } }
+  [-.75, 0, .75].forEach((x, i) => pillar(x, .77, HZ + .12, .3 + (i % 2) * .1, .16 + (i % 2) * .06, .055));
+  // wedding party: 8 bridesmaids and 8 groomsmen at two tables of eight either side of the dance floor
+  roundTable(-6.4, -11.2, 401, 8);
+  roundTable(6.4, -11.2, 402, 8);
   // draped backdrop with folds
   { const geo = new THREE.PlaneGeometry(10, 4.6, 120, 1); const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getX(i) * 7) * .07);
@@ -397,6 +408,40 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   barrel(2.3, 14.2, true);
   [[-7.3, 1.8, 12], [7.3, 1.8, 12], [0, 2.6, 12.8]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffbf78, .9, 9, 2); L.position.set(x, y, z); scene.add(L); });
 
+  // ---------- second side: cocktail lounge, grazing table and the donut wall ----------
+  // cocktail high-tops, cloth to the floor, a pillar candle and greenery on each
+  [[12.8, 10], [16, 11], [19.2, 10], [12.8, 4.5], [16, 5.5], [19.2, 4.5]].forEach(([x, z], k) => {
+    put('cloth', x, .55, z, .4, 1.1, .4);
+    pillar(x, 1.1, z, .22, .12, .05);
+    for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; put('plant', x + Math.cos(a) * .14, 1.11, z + Math.sin(a) * .14, .05, .01, .02, 0, -a, 0, GREEN[(i + k) % 4]); }
+  });
+  // charcuterie grazing table along the middle of the second side
+  { const gx = 16, z0 = -7.5, z1 = -1.5, gl = z1 - z0;
+    box(M.cloth, gx, .385, (z0 + z1) / 2, 1.3, .77, gl);
+    const r = rng(77), FOOD = [C(0xe8c36a), C(0xf1dfa8), C(0xb0485a), C(0x8f3346), C(0x5b2b4a), C(0x7a9a52), C(0xd98b4a), C(0xf4ece0)];
+    for (let i = 0; i < 420; i++) { const z = z0 + .2 + r() * (gl - .4), x = gx + (r() - .5) * 1.1, c = FOOD[Math.floor(r() * FOOD.length)], s = .025 + r() * .03; put('plant', x, .79 + s * .5, z, s * (1 + r()), s * .8, s, 0, r() * 3, 0, c); }
+    for (let i = 0; i < 7; i++) put('wood', gx + (i % 2 ? .3 : -.3), .78, z0 + .5 + i * .85, .5, .02, .32);
+    [z0 + .8, (z0 + z1) / 2, z1 - .8].forEach(z => pillar(gx, .77, z, .3, .18, .055));
+  }
+  // the donut wall: a wooden board on the far wall with rows of glazed donuts on pegs
+  const donutGeo = new THREE.TorusGeometry(.055, .028, 10, 20), donutMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .55 });
+  const GLAZE = [C(0xf3c6d0), C(0x5a3424), C(0xf4ead8), C(0xe2a86b), C(0xc98ba8), C(0x8a5a3a)];
+  const dw = { x: XR - .12, z: -9.5, w: 2.6, h: 1.9, y: 1.55 };
+  box(M.darkwood, XR - .05, dw.y, dw.z, .06, dw.h, dw.w);
+  const donuts = new THREE.InstancedMesh(donutGeo, donutMat, 7 * 9), dm = new THREE.Matrix4(), dq = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 2, 0));
+  let di = 0;
+  for (let row = 0; row < 7; row++) for (let col = 0; col < 9; col++) {
+    dm.compose(V(dw.x - .02, dw.y - dw.h / 2 + .2 + row * .25, dw.z - dw.w / 2 + .2 + col * .275), dq, V(1, 1, 1));
+    donuts.setMatrixAt(di, dm); donuts.setColorAt(di, GLAZE[(row * 3 + col) % GLAZE.length]); di++;
+  }
+  scene.add(donuts);
+  const donutSign = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .4), new THREE.MeshBasicMaterial({ map: canvasTex(512, 146, (g) => {
+    g.fillStyle = '#f6ecdc'; g.fillRect(0, 0, 512, 146); g.strokeStyle = '#c9a45c'; g.lineWidth = 8; g.strokeRect(6, 6, 500, 134);
+    g.fillStyle = '#4a3426'; g.font = 'italic 600 84px "Cormorant Garamond", Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('Donuts', 256, 78); }) }));
+  donutSign.position.set(XR - .09, dw.y + dw.h / 2 + .3, dw.z); donutSign.rotation.y = -Math.PI / 2; scene.add(donutSign);
+  box(M.cloth, XR - .55, .45, dw.z, .7, .9, 2.4);
+  [[15.5, 3.6, 5], [15.5, 3.6, -4.5], [XR - 2.2, 2.6, dw.z]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffc888, .9, 11, 2); L.position.set(x, y, z); scene.add(L); });
+
   // ---------- general light ----------
   scene.add(new THREE.HemisphereLight(C(0xffe1b8), C(0x2a1a10), .55));
   const fill = new THREE.PointLight(0xffd29a, .6, 30, 2); fill.position.set(0, 4.5, 0); scene.add(fill);
@@ -432,8 +477,10 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     aisle: { p: [0, 1.6, 6], t: [0, 1.35, -10] },
     table: { p: [-2.0, 1.75, 5.2], t: [-3.6, .85, 3] },
     barrels: { p: [-4.2, 1.7, 10.4], t: [-7.9, 1.0, 12.6] },
-    head: { p: [0, 1.7, -6.8], t: [0, 1.6, -14] },
-    overview: { p: [11.5, 10.5, 17.5], t: [0, 0, -1.5] },
+    head: { p: [0, 1.55, -8.2], t: [0, 1.3, -14] },
+    lounge: { p: [9.5, 1.7, 11.5], t: [17.5, 1.0, -3] },
+    donuts: { p: [17.2, 1.6, -7.2], t: [XR, 1.4, -9.5] },
+    overview: { p: [24, 13, 22], t: [6, 0, -1.5] },
   };
   const target = V(0, 1.5, 2);
   let yaw = 0, pitch = 0, dist = 12;
@@ -444,7 +491,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   function applyCam() {
     pitch = THREE.MathUtils.clamp(pitch, -1.2, 1.45); dist = THREE.MathUtils.clamp(dist, .3, 45);
     camera.position.set(target.x + dist * Math.cos(pitch) * Math.sin(yaw), target.y + dist * Math.sin(pitch), target.z + dist * Math.cos(pitch) * Math.cos(yaw));
-    camera.position.x = THREE.MathUtils.clamp(camera.position.x, -RW / 2 + .2, RW / 2 - .2);
+    camera.position.x = THREE.MathUtils.clamp(camera.position.x, XL + .2, XR - .2);
     camera.position.z = THREE.MathUtils.clamp(camera.position.z, -RL / 2 + .2, RL / 2 + 8);
     camera.position.y = THREE.MathUtils.clamp(camera.position.y, .3, 14);
     camera.lookAt(target);
@@ -465,7 +512,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     if (k >= 1) tween = null;
     return true;
   }
-  const TOUR = ['entrance', 'aisle', 'table', 'barrels', 'head', 'overview'];
+  const TOUR = ['entrance', 'aisle', 'table', 'barrels', 'head', 'lounge', 'donuts', 'overview'];
   let touring = false, tourIdx = 0, tourNext = 0;
   const tourBtn = document.getElementById('tour');
   function setTour(on) {
@@ -499,7 +546,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     if (keys.has('d') || keys.has('arrowright')) m.add(r); if (keys.has('a') || keys.has('arrowleft')) m.sub(r);
     if (keys.has('e')) target.y += sp * .6; if (keys.has('q')) target.y -= sp * .6;
     if (m.lengthSq()) target.add(m.normalize().multiplyScalar(sp));
-    target.x = THREE.MathUtils.clamp(target.x, -RW / 2 + .4, RW / 2 - .4); target.z = THREE.MathUtils.clamp(target.z, -RL / 2 + .4, RL / 2 - .4);
+    target.x = THREE.MathUtils.clamp(target.x, XL + .4, XR - .4); target.z = THREE.MathUtils.clamp(target.z, -RL / 2 + .4, RL / 2 - .4);
   }
 
   function resize() { const w = window.innerWidth, h = window.innerHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 72 : 60; camera.updateProjectionMatrix(); }
@@ -535,5 +582,4 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   requestAnimationFrame(frame);
 })();
 </script>
-
 
