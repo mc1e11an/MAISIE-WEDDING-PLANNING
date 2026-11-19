@@ -19,7 +19,9 @@
   --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: dark;
 }
+[hidden] { display: none !important; }
 html { background: var(--bg); }
+body { margin: 0; }
 body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
 .wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
 header { display: grid; gap: 12px; max-width: 760px; }
@@ -130,5 +132,6 @@ h2 { margin: 0 0 -16px; font-family: var(--display); font-weight: 500; font-size
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !viewer.hidden) close(); });
 })();
 </script>
+
 
 
