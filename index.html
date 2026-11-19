@@ -546,8 +546,8 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   [[-7.3, 1.8, 12], [7.3, 1.8, 12], [0, 2.6, 12.8]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffbf78, .9, 9, 2); L.position.set(x, y, z); scene.add(L); });
 
   // ---------- cocktail hour, guest book and lights on the second side ----------
-  // cocktail hour by the left bar: high-tops among the barrels, cloth to the floor, a pillar candle and greenery on each
-  [[-7.6, 13.9], [-2.4, 10.0], [-2.6, 13.0], [2.4, 10.0], [2.6, 13.0], [4.6, 11.6]].forEach(([x, z], k) => {
+  // cocktail hour by the left bar is the wine barrels only (the cloth high-tops are removed)
+  [].forEach(([x, z], k) => {
     put('cloth', x, .55, z, .4, 1.1, .4);
     pillar(x, 1.1, z, .22, .12, .05);
     for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; put('plant', x + Math.cos(a) * .14, 1.11, z + Math.sin(a) * .14, .05, .01, .02, 0, -a, 0, GREEN[(i + k) % 4]); }
