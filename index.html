@@ -66,14 +66,14 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   <p class="eyebrow">Hellenic Cultural Centre · Windsor, ON</p>
   <h1>Rustic candlelit reception</h1>
   <dl class="stats">
-    <dt>150</dt><dd>guests</dd>
+    <dt>170</dt><dd>guests</dd>
     <dt>15</dt><dd>round tables of 10 (6 ft)</dd>
     <dt>1</dt><dd>sweetheart table for Stewart &amp; Maisie</dd>
-    <dt>2</dt><dd>wedding party tables of 8 (bridesmaids, groomsmen)</dd>
+    <dt>2</dt><dd>long tables of 12 along the dance floor (bridesmaids, groomsmen and friends)</dd>
     <dt>2</dt><dd>bars, one on each side</dd>
     <dt>7</dt><dd>wine barrels, incl. card box at the entrance</dd>
   </dl>
-  <p class="note">Both sides open: the folding partition is stacked back. Cocktail hour is by the left bar, the guest book is at the back, and the second side holds the grazing table, second bar and donut wall. Modelled from venue photos; sizes (about 32 × 30 m together) are estimates, not from floor plans.</p>
+  <p class="note">Both sides open: the folding partition is stacked back. The dining tables are centred across both sides, the entrance is midway along the left wall, cocktail hour is by the left bar, the guest book is at the back, and the right wall has the second bar and the donut wall. Modelled from venue photos; sizes (about 32 × 30 m together) are estimates, not from floor plans.</p>
   <p class="hint">Drag to look around · scroll or pinch to zoom · W A S D to walk</p>
 </section>
 
@@ -108,8 +108,8 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   renderer.toneMappingExposure = 1.2;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0f0a07);
-  scene.fog = new THREE.Fog(0x0f0a07, 22, 60);
-  const camera = new THREE.PerspectiveCamera(60, 1, 0.05, 150);
+  scene.fog = new THREE.Fog(0x0f0a07, 60, 160);
+  const camera = new THREE.PerspectiveCamera(60, 1, 0.05, 220);
 
   const C = (h) => new THREE.Color(h).convertSRGBToLinear();
   const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -255,7 +255,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   box(M.darkwood, 9.0, .55, -RL / 2 + .25, 1.8, 1.1, .5); box(M.trim, 9.0, 1.12, -RL / 2 + .25, 1.9, .05, .6);
   { const w = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.0), new THREE.MeshBasicMaterial({ color: C(0x151210) })); w.position.set(9.0, 1.7, -RL / 2 + .03); scene.add(w); }
   // main entrance: double doors in the left wall, near the sweetheart-table end
-  const ENTZ = -9.6;
+  const ENTZ = 0;
   box(M.trim, XL + .03, 1.2, ENTZ, .06, 2.45, 2.5); box(M.steel, XL + .06, 1.1, ENTZ, .04, 2.2, 2.2);
   box(M.trim, XL + .08, 1.1, ENTZ, .02, 2.2, .04);
   // second side: an exit on the far wall
@@ -349,35 +349,75 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   }
   // 150 guests: fifteen tables in four columns either side of a centre aisle.
   const spots = [];
-  [7.5, 3, -1.5, -6].forEach(z => [-7, -3.6, 3.6, 7].forEach(x => { if (!(z === -6 && x === 7)) spots.push([x, z]); }));
-  spots.forEach(([x, z], i) => roundTable(x, z, 101 + i));
+  // 15 round tables of 10 (150) + 24 at the long tables + the couple = 176 seats for about 170 guests
+  // spread across both sides: three columns either side of the aisle (x offsets from the centre line), three rows
+  [[-12, -4], [-7.8, -4], [-3.6, -4], [3.6, -4], [7.8, -4], [-12, 1.5], [-7.8, 1.5], [-3.6, 1.5], [3.6, 1.5], [7.8, 1.5], [12, 1.5], [-7.8, 7], [-3.6, 7], [3.6, 7], [7.8, 7]].forEach(p => spots.push(p));
+  const DX = XM; // the dining block is centred across both sides of the hall
+  spots.forEach(([x, z], i) => roundTable(x + DX, z, 101 + i));
 
   // cake table where the sixteenth would be
-  put('cloth', 7, .385, -6, .55, .77, .55);
-  [[.3, .25], [.23, .22], [.16, .2]].forEach(([rr, h], i) => put('ceramic', 7, .77 + .1 + i * .21 + h / 2 - .1, -6, rr, h, rr));
-  for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; put('plant', 7 + Math.sin(a) * .3, .99, -6 + Math.cos(a) * .3, .04, .035, .04, 0, 0, 0, i % 3 ? BLOOM[1] : GREEN[0]); }
+  put('cloth', 12 + DX, .385, -4, .55, .77, .55);
+  [[.3, .25], [.23, .22], [.16, .2]].forEach(([rr, h], i) => put('ceramic', 12 + DX, .77 + .1 + i * .21 + h / 2 - .1, -4, rr, h, rr));
+  for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; put('plant', 12 + DX + Math.sin(a) * .3, .99, -4 + Math.cos(a) * .3, .04, .035, .04, 0, 0, 0, i % 3 ? BLOOM[1] : GREEN[0]); }
 
   // aisle runner and dance floor
-  const runner = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 21), M.runner); runner.rotation.x = -Math.PI / 2; runner.position.set(0, .006, 3.8); scene.add(runner);
-  const dance = new THREE.Mesh(new THREE.PlaneGeometry(6.5, 4.2), M.dance); dance.rotation.x = -Math.PI / 2; dance.position.set(0, .004, -9.4); scene.add(dance);
+  const runner = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 16.3), M.runner); runner.rotation.x = -Math.PI / 2; runner.position.set(DX, .006, .85); scene.add(runner);
+  const dance = new THREE.Mesh(new THREE.PlaneGeometry(6.5, 4.2), M.dance); dance.rotation.x = -Math.PI / 2; dance.position.set(DX, .004, -9.4); scene.add(dance);
+  // monogram decal in the middle of the dance floor
+  const decalTex = canvasTex(1024, 1024, () => {}, true);
+  function drawDecal() {
+    const g = decalTex.image.getContext('2d'); g.clearRect(0, 0, 1024, 1024);
+    g.strokeStyle = 'rgba(246,236,220,.9)'; g.lineWidth = 10; g.beginPath(); g.arc(512, 512, 430, 0, Math.PI * 2); g.stroke();
+    g.lineWidth = 4; g.beginPath(); g.arc(512, 512, 400, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = 'rgba(50,30,18,.35)'; g.beginPath(); g.arc(512, 512, 425, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#fffaf0'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = 'italic 600 300px "Cormorant Garamond", Georgia, serif'; g.fillText('M & S', 512, 500);
+    g.font = '600 54px "Cormorant Garamond", Georgia, serif'; g.fillText('MAISIE  ·  STEWART', 512, 700);
+    decalTex.needsUpdate = true;
+  }
+  drawDecal();
+  if (document.fonts && document.fonts.load) document.fonts.load('italic 500 300px "Cormorant Garamond"').then(drawDecal, () => {});
+  const decal = new THREE.Mesh(new THREE.PlaneGeometry(2.8, 2.8), new THREE.MeshBasicMaterial({ map: decalTex, transparent: true, depthWrite: false }));
+  decal.rotation.x = -Math.PI / 2; decal.position.set(DX, .009, -9.4); scene.add(decal);
 
   // ---------- sweetheart table for Stewart and Maisie, backdrop and sign ----------
   const HZ = -12.7, SW = 1.9;
-  box(M.cloth, 0, .385, HZ, SW, .77, .85);
-  [-.45, .45].forEach(x => { chair(x, HZ - .75, Math.PI); put('gold', x, .776, HZ - .15, .16, .012, .16); put('ceramic', x, .786, HZ - .15, .12, .014, .12); });
-  { const r = rng(5); for (let i = 0; i < 120; i++) { const x = -SW / 2 - .05 + r() * (SW + .1); put('plant', x, .8 + r() * .14, HZ + .3 + r() * .12, .05 + r() * .03, .04 + r() * .02, .05, 0, r() * 3, 0, i % 3 ? GREEN[i % 4] : BLOOM[i % 4]); }
-    for (let i = 0; i < 70; i++) { const x = -SW / 2 + r() * SW; put('plant', x, .74 - r() * .55, HZ + .44, .03, .08, .03, 0, 0, r() - .5, GREEN[i % 4]); } }
-  [-.75, 0, .75].forEach((x, i) => pillar(x, .77, HZ + .12, .3 + (i % 2) * .1, .16 + (i % 2) * .06, .055));
+  box(M.cloth, DX, .385, HZ, SW, .77, .85);
+  [-.45 + DX, .45 + DX].forEach(x => { chair(x, HZ - .75, Math.PI); put('gold', x, .776, HZ - .15, .16, .012, .16); put('ceramic', x, .786, HZ - .15, .12, .014, .12); });
+  { const r = rng(5); for (let i = 0; i < 120; i++) { const x = DX - SW / 2 - .05 + r() * (SW + .1); put('plant', x, .8 + r() * .14, HZ + .3 + r() * .12, .05 + r() * .03, .04 + r() * .02, .05, 0, r() * 3, 0, i % 3 ? GREEN[i % 4] : BLOOM[i % 4]); }
+    for (let i = 0; i < 70; i++) { const x = DX - SW / 2 + r() * SW; put('plant', x, .74 - r() * .55, HZ + .44, .03, .08, .03, 0, 0, r() - .5, GREEN[i % 4]); } }
+  [-.75, 0, .75].forEach((x, i) => pillar(x + DX, .77, HZ + .12, .3 + (i % 2) * .1, .16 + (i % 2) * .06, .055));
   // wedding party: 8 bridesmaids and 8 groomsmen at two tables of eight either side of the dance floor
-  roundTable(-6.4, -11.2, 401, 8);
-  roundTable(6.4, -11.2, 402, 8);
+  // long rectangular tables running alongside the dance floor, chairs on both sides
+  function longTable(cx, cz, len, perSide, seed) {
+    const r = rng(seed), T = .77, w = .9;
+    box(M.cloth, cx, .385, cz, w, .77, len);
+    for (let i = 0; i < perSide; i++) {
+      const z = cz - len / 2 + (i + .5) * len / perSide;
+      [-1, 1].forEach(sd => {
+        const px = cx + sd * .27;
+        put('gold', px, T + .006, z, .16, .012, .16); put('ceramic', px, T + .016, z, .12, .014, .12);
+        put('napkin', px, T + .03, z, .12, .025, .05);
+        put('glass', px + sd * -.12, T + .07, z + .17, .03, .14, .03);
+        chair(cx + sd * .85, z, sd * Math.PI / 2);
+      });
+    }
+    // eucalyptus garland down the middle with pillar candles and votives
+    for (let i = 0; i < Math.round(len * 26); i++) { const z = cz - len / 2 + .1 + r() * (len - .2), x = cx + (r() - .5) * .16; put('plant', x, T + .02 + r() * .03, z, .06, .014, .022, 0, r() * 3, r() * .4, GREEN[i % 4]); }
+    for (let i = 0; i < Math.round(len * 6); i++) { const z = cz - len / 2 + .2 + r() * (len - .4); put('plant', cx + (r() - .5) * .12, T + .05, z, .035, .03, .035, 0, 0, 0, BLOOM[i % 4]); }
+    const n = Math.max(2, Math.round(len / .9));
+    for (let i = 0; i < n; i++) { const z = cz - len / 2 + (i + .5) * len / n; pillar(cx, T, z, .26 + (i % 2) * .08, .15 + (i % 2) * .05, .05); }
+    tableGlows.push(V(cx, T + .35, cz));
+  }
+  longTable(DX - 4.7, -10.2, 3.7, 6, 401);
+  longTable(DX + 4.7, -10.2, 3.7, 6, 402);
   // draped backdrop with folds
-  { const geo = new THREE.PlaneGeometry(10, 4.6, 120, 1); const pos = geo.attributes.position;
+  { const geo = new THREE.PlaneGeometry(7, 4.6, 90, 1); const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getX(i) * 7) * .07);
     geo.computeVertexNormals(); const bd = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: C(0xf7efe2), roughness: 1, emissive: C(0x2c1a0c) }));
-    bd.position.set(0, 2.3, -RL / 2 + .25); scene.add(bd); }
+    bd.position.set(DX, 2.3, -RL / 2 + .25); scene.add(bd); }
   // floral stands either side
-  [-4.6, 4.6].forEach((x, k) => { const r = rng(20 + k); put('gold', x, .8, HZ - .6, .03, 1.6, .03); put('gold', x, .02, HZ - .6, .22, .04, .22);
+  [DX - 3.3, DX + 3.3].forEach((x, k) => { const r = rng(20 + k); put('gold', x, .8, HZ - .6, .03, 1.6, .03); put('gold', x, .02, HZ - .6, .22, .04, .22);
     for (let i = 0; i < 90; i++) { const a = r() * Math.PI * 2, d = Math.sqrt(r()) * .55, y = 1.75 + (r() - .5) * .7; put('plant', x + Math.cos(a) * d, y - (d > .4 ? r() * .4 : 0), HZ - .6 + Math.sin(a) * d * .6, .07 + r() * .04, .06, .07, 0, r() * 3, 0, i % 3 ? BLOOM[i % 4] : GREEN[i % 4]); } });
   // the lit sign
   const signTex = canvasTex(1024, 320, () => {}, true);
@@ -391,8 +431,8 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   drawSign();
   if (document.fonts && document.fonts.load) document.fonts.load('italic 500 210px "Cormorant Garamond"').then(drawSign, () => {});
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.06), new THREE.MeshBasicMaterial({ map: signTex, transparent: true, depthWrite: false }));
-  sign.position.set(0, 3.25, -RL / 2 + .45); scene.add(sign);
-  [[-2.6, 1.6, -13.2], [2.6, 1.6, -13.2], [0, 3.2, -13.6]].forEach(([x, y, z], i) => { const L = new THREE.PointLight(0xffc27a, i === 2 ? .9 : 1.2, 9, 2); L.position.set(x, y, z); scene.add(L); });
+  sign.position.set(DX, 3.25, -RL / 2 + .45); scene.add(sign);
+  [[-2.6, 1.6, -13.2], [2.6, 1.6, -13.2], [0, 3.2, -13.6]].forEach(([x, y, z], i) => { const L = new THREE.PointLight(0xffc27a, i === 2 ? .9 : 1.2, 9, 2); L.position.set(x + DX, y, z); scene.add(L); });
 
   // ---------- wine barrels ----------
   const prof = []; for (let i = 0; i <= 14; i++) { const y = i / 14 * .95; prof.push(new THREE.Vector2(.29 + .06 * Math.sin(Math.PI * y / .95), y)); }
@@ -420,7 +460,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     }
   }
   [[-5.4, 10.2], [-5.6, 13.3], [-3.6, 11.8], [6.1, 13.4], [8.2, 12.6], [8.5, 10.2]].forEach(([x, z]) => barrel(x, z, false));
-  barrel(-9.1, -7.6, true);
+  barrel(-9.1, 2.2, true);
   [[-7.3, 1.8, 12], [7.3, 1.8, 12], [0, 2.6, 12.8]].forEach(([x, y, z]) => { const L = new THREE.PointLight(0xffbf78, .9, 9, 2); L.position.set(x, y, z); scene.add(L); });
 
   // ---------- second side: cocktail lounge, grazing table and the donut wall ----------
@@ -443,14 +483,6 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     put('goldbox', .45, .9, gz + .14, .52, .02, .02);
     pillar(-.65, .77, gz + .05, .26, .15, .05);
     for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; put('plant', -.65 + Math.cos(a) * .12, .79, gz + .05 + Math.sin(a) * .08, .05, .012, .02, 0, -a, 0, i % 3 ? GREEN[i % 4] : BLOOM[1]); }
-  }
-  // charcuterie grazing table along the middle of the second side
-  { const gx = 16, z0 = -7.5, z1 = -1.5, gl = z1 - z0;
-    box(M.cloth, gx, .385, (z0 + z1) / 2, 1.3, .77, gl);
-    const r = rng(77), FOOD = [C(0xe8c36a), C(0xf1dfa8), C(0xb0485a), C(0x8f3346), C(0x5b2b4a), C(0x7a9a52), C(0xd98b4a), C(0xf4ece0)];
-    for (let i = 0; i < 420; i++) { const z = z0 + .2 + r() * (gl - .4), x = gx + (r() - .5) * 1.1, c = FOOD[Math.floor(r() * FOOD.length)], s = .025 + r() * .03; put('plant', x, .79 + s * .5, z, s * (1 + r()), s * .8, s, 0, r() * 3, 0, c); }
-    for (let i = 0; i < 7; i++) put('wood', gx + (i % 2 ? .3 : -.3), .78, z0 + .5 + i * .85, .5, .02, .32);
-    [z0 + .8, (z0 + z1) / 2, z1 - .8].forEach(z => pillar(gx, .77, z, .3, .18, .055));
   }
   // the donut wall: a wooden board on the far wall with rows of glazed donuts on pegs
   const donutGeo = new THREE.TorusGeometry(.055, .028, 10, 20), donutMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .55 });
@@ -498,20 +530,20 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   points(chandZ.map(z => V(0, 3.85, z)), 2.6, 0xffc070, .55);
   points(pots.map(p => V(p.x, p.y - .05, p.z)), .6, 0xfff0d6, .55);
   points(sconces, 1.4, 0xffd9a8, .4);
-  points([V(-4.6, .2, -14.6), V(4.6, .2, -14.6), V(-1.5, .2, -14.7), V(1.5, .2, -14.7)], 3.2, 0xffa850, .35);
+  points([V(DX - 3.3, .2, -14.6), V(DX + 3.3, .2, -14.6), V(DX - 1.5, .2, -14.7), V(DX + 1.5, .2, -14.7)], 3.2, 0xffa850, .35);
 
   // ---------- camera: orbit, zoom, walk, and the tour ----------
   const VIEWS = {
-    entrance: { p: [-9.3, 1.7, -9.6], t: [4, 1.3, -1] },
-    aisle: { p: [0, 1.6, 6], t: [0, 1.35, -10] },
-    table: { p: [-2.0, 1.75, 5.2], t: [-3.6, .85, 3] },
+    entrance: { p: [-9.3, 1.7, 0], t: [4, 1.3, -4] },
+    aisle: { p: [XM, 1.6, 6], t: [XM, 1.35, -10] },
+    table: { p: [XM - 2.0, 1.75, 5.2], t: [XM - 3.6, .85, 3] },
     barrels: { p: [-0.8, 1.7, 13.6], t: [-8.2, 1.0, 10.4] },
-    head: { p: [0, 1.55, -8.2], t: [0, 1.3, -14] },
+    head: { p: [XM, 1.55, -8.2], t: [XM, 1.3, -14] },
     lounge: { p: [7.2, 1.9, 9.4], t: [-6, 1.0, 12.2] },
     book: { p: [0.3, 1.55, 11.6], t: [0, 0.9, 15] },
     donuts: { p: [17.2, 1.6, 9.6], t: [XR, 1.4, 12] },
     bar: { p: [15.5, 1.7, -6.5], t: [XR, 1.2, -9.5] },
-    overview: { p: [24, 13, 22], t: [6, 0, -1.5] },
+    overview: { p: [6, 31, 10.5], t: [6, 0, 0.5] },
   };
   const target = V(0, 1.5, 2);
   let yaw = 0, pitch = 0, dist = 12;
@@ -520,17 +552,24 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
     yaw = Math.atan2(o.x, o.z); pitch = Math.asin(THREE.MathUtils.clamp(o.y / dist, -1, 1));
   }
   function applyCam() {
-    pitch = THREE.MathUtils.clamp(pitch, -1.2, 1.45); dist = THREE.MathUtils.clamp(dist, .3, 45);
+    pitch = THREE.MathUtils.clamp(pitch, -1.2, 1.45); dist = THREE.MathUtils.clamp(dist, .3, 100);
     camera.position.set(target.x + dist * Math.cos(pitch) * Math.sin(yaw), target.y + dist * Math.sin(pitch), target.z + dist * Math.cos(pitch) * Math.cos(yaw));
     camera.position.x = THREE.MathUtils.clamp(camera.position.x, XL + .2, XR - .2);
-    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -RL / 2 + .2, RL / 2 + 8);
-    camera.position.y = THREE.MathUtils.clamp(camera.position.y, .3, 14);
+    camera.position.z = THREE.MathUtils.clamp(camera.position.z, -RL / 2 + .2, RL / 2 + 30);
+    camera.position.y = THREE.MathUtils.clamp(camera.position.y, .3, 90);
     camera.lookAt(target);
   }
   let tween = null;
   const ease = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
   function goTo(name, dur) {
     const v = VIEWS[name]; if (!v) return;
+    const card = document.querySelector('.card'); if (card) card.hidden = name === 'overview';
+    if (name === 'overview') {
+      // fit the whole floor (both sides, about 34 x 32 m with margin) on any screen shape, looking almost straight down
+      const vf = THREE.MathUtils.degToRad(camera.fov) / 2, hf = Math.atan(Math.tan(vf) * camera.aspect);
+      const d = Math.max(18.5 / Math.tan(hf), 17.5 / Math.tan(vf));
+      v.p = [XM, d * .97, .5 + d * .24]; v.t = [XM, 0, .5];
+    }
     tween = { p0: camera.position.clone(), t0: target.clone(), p1: V(...v.p), t1: V(...v.t), start: performance.now() / 1000, dur: reduce ? .01 : (dur || 2.2) };
   }
   function stepTween(now) {
@@ -613,4 +652,7 @@ h1 { font-family: var(--display); font-weight: 500; font-size: 32px; line-height
   requestAnimationFrame(frame);
 })();
 </script>
+
+
+
 
