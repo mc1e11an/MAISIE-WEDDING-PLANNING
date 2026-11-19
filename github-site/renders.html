@@ -1,0 +1,134 @@
+﻿<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hellenic Centre Wedding Renders</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a candlelit gallery. One wide hero render, then the views in a two-column grid with plain captions; tap any image to see it full size. Single dark look on purpose, to match the renders. */
+:root {
+  --bg: #15100c;
+  --surface: #211912;
+  --fg: #f4eadb;
+  --muted: #c4b097;
+  --gold: #cfa560;
+  --line: rgba(244, 234, 219, .14);
+  --display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
+header { display: grid; gap: 12px; max-width: 760px; }
+.eyebrow { margin: 0; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+h1 { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(38px, 6vw, 64px); line-height: 1.02; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 4px 0 0; padding: 0; list-style: none; font-size: 14px; }
+.facts li { display: flex; gap: 6px; align-items: baseline; }
+.facts b { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--fg); }
+.facts span { color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #1b130c; background: var(--gold); font-weight: 600; font-size: 14px; padding: 11px 16px; border-radius: 999px; }
+.btn:focus-visible, figure button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+figure button { all: unset; cursor: zoom-in; display: block; border-radius: 6px; overflow: hidden; background: var(--surface); }
+figure img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .5s ease; }
+figure button:hover img { transform: scale(1.015); }
+figcaption { display: grid; gap: 2px; }
+figcaption strong { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.15; }
+figcaption span { color: var(--muted); font-size: 14px; max-width: 60ch; }
+.hero figcaption strong { font-size: 28px; }
+h2 { margin: 0 0 -16px; font-family: var(--display); font-weight: 500; font-size: 30px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
+@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+.note { margin: 0; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; max-width: 80ch; }
+.viewer { position: fixed; inset: 0; z-index: 20; background: rgba(10, 7, 5, .94); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); cursor: zoom-out; }
+.viewer img { max-width: 100%; max-height: calc(100% - 40px); border-radius: 4px; }
+.viewer p { margin: 10px 0 0; text-align: center; color: var(--muted); font-size: 14px; }
+.viewer .inner { display: grid; justify-items: center; max-height: 100%; }
+@media (prefers-reduced-motion: reduce) { figure img { transition: none; } }
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Hellenic Cultural Centre · Windsor, Ontario</p>
+    <h1>A rustic candlelit reception for 150</h1>
+    <p class="lede">Rendered views of the main hall set for the wedding: crossback chairs, cream linen, eucalyptus and pillar candles, sheer draping with string lights, wine barrel cocktail tables and a head table with a draped backdrop. Tap any picture to see it full size.</p>
+    <ul class="facts">
+      <li><b>150</b><span>guests</span></li>
+      <li><b>15</b><span>round tables of 10</span></li>
+      <li><b>1</b><span>head table</span></li>
+      <li><b>7</b><span>wine barrels, incl. the card box</span></li>
+    </ul>
+    <div class="links">
+      <a class="btn" href="index.html">Walk around the 3D model</a>
+    </div>
+  </header>
+
+  <figure class="hero">
+    <button type="button" aria-label="View the hall from the barrels full size"><img src="img/barrels.jpg" alt="The hall lit by string lights and candles, wine barrel tables with lanterns in front and round tables beyond" width="1920" height="1080"></button>
+    <figcaption><strong>Cocktail hour by the barrels</strong><span>Lanterns, votives and eucalyptus on each barrel, with the dining room set beyond.</span></figcaption>
+  </figure>
+
+  <h2>The hall</h2>
+  <div class="grid">
+    <figure>
+      <button type="button" aria-label="View the entrance full size"><img src="img/entrance.jpg" alt="View from the entrance down the aisle runner between round tables to the head table" width="1920" height="1080" loading="lazy"></button>
+      <figcaption><strong>From the entrance</strong><span>The aisle runner leads between the tables to the dance floor and head table.</span></figcaption>
+    </figure>
+    <figure>
+      <button type="button" aria-label="View the aisle full size"><img src="img/aisle.jpg" alt="View from mid-aisle toward the head table under draped ceiling fabric and string lights" width="1920" height="1080" loading="lazy"></button>
+      <figcaption><strong>Down the aisle</strong><span>Sheer fabric swags across the drop ceiling, strung with warm lights.</span></figcaption>
+    </figure>
+    <figure>
+      <button type="button" aria-label="View a guest table full size"><img src="img/table.jpg" alt="Close view of a round table for ten with gold chargers, a eucalyptus ring and pillar candles in glass" width="1920" height="1080" loading="lazy"></button>
+      <figcaption><strong>Table for ten</strong><span>Gold chargers, taupe napkins, a eucalyptus ring, baby's breath, petals and pillar candles in glass.</span></figcaption>
+    </figure>
+    <figure>
+      <button type="button" aria-label="View the head table full size"><img src="img/head.jpg" alt="Long head table with a rose garland, candles, gold floral stands and a lit Together sign on a draped backdrop" width="1920" height="1080" loading="lazy"></button>
+      <figcaption><strong>The head table</strong><span>Cream and peach rose garland, tall floral stands, and a lit sign on the draped backdrop.</span></figcaption>
+    </figure>
+    <figure>
+      <button type="button" aria-label="View the overview full size"><img src="img/overview.jpg" alt="Overhead cutaway of the whole hall showing fifteen round tables, the aisle, dance floor, head table and barrels" width="1920" height="1080" loading="lazy"></button>
+      <figcaption><strong>The full layout</strong><span>Seen from above with the ceiling removed: 15 tables in four columns, the aisle, dance floor, cake table and barrels.</span></figcaption>
+    </figure>
+    <figure>
+      <button type="button" aria-label="View the bridal suite full size"><img src="img/bridal.jpg" alt="The bridal suite with a long vanity, oval carved mirror with bulbs, cream chair, settee with pink heart pillows and gold ring wall art" width="1920" height="1080" loading="lazy"></button>
+      <figcaption><strong>The bridal suite</strong><span>Vanity with the oval carved mirror, the cream settee and pink heart pillows.</span></figcaption>
+    </figure>
+  </div>
+
+  <h2>Arriving</h2>
+  <figure>
+    <button type="button" aria-label="View the exterior full size"><img src="img/exterior.jpg" alt="The building at dusk seen from the parking lot, its glass entrance lit, with a domed church behind" width="1920" height="1080" loading="lazy"></button>
+    <figcaption><strong>The building at dusk</strong><span>An approximate model of the outside, with the church dome next door.</span></figcaption>
+  </figure>
+
+  <p class="note">The hall and bridal suite are modelled from photos of the venue. Room sizes are estimates, not taken from floor plans. The outside of the building is an approximation, since no detailed photos or drawings of the facade were available.</p>
+</main>
+
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="Full-size picture">
+  <div class="inner"><img id="viewer-img" alt=""><p id="viewer-cap"></p></div>
+</div>
+
+<script>
+(function () {
+  var viewer = document.getElementById('viewer'), vimg = document.getElementById('viewer-img'), vcap = document.getElementById('viewer-cap'), last = null;
+  document.querySelectorAll('figure button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var img = b.querySelector('img'), cap = b.parentNode.querySelector('figcaption strong');
+      vimg.src = img.src; vimg.alt = img.alt; vcap.textContent = cap ? cap.textContent : '';
+      last = b; viewer.hidden = false; viewer.focus();
+    });
+  });
+  function close() { viewer.hidden = true; vimg.removeAttribute('src'); if (last) last.focus(); }
+  viewer.tabIndex = -1;
+  viewer.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !viewer.hidden) close(); });
+})();
+</script>
+
+
