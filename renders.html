@@ -40,6 +40,7 @@ figure button { all: unset; cursor: zoom-in; display: block; border-radius: 6px;
 figure img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .5s ease; }
 figure button:hover img { transform: scale(1.015); }
 figcaption { display: grid; gap: 2px; }
+.film video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 6px; background: var(--surface); }
 figcaption strong { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.15; }
 figcaption span { color: var(--muted); font-size: 14px; max-width: 60ch; }
 .hero figcaption strong { font-size: 28px; }
@@ -69,6 +70,13 @@ h2 { margin: 0 0 -16px; font-family: var(--display); font-weight: 500; font-size
       <a class="btn" href="index.html">Walk around the 3D model</a>
     </div>
   </header>
+
+  <figure class="film">
+    <video controls playsinline muted preload="metadata" poster="img/entrance.jpg" width="1280" height="720">
+      <source src="video/hellenic-wedding-walkthrough.mp4" type="video/mp4">
+    </video>
+    <figcaption><strong>Walkthrough</strong><span>38 seconds: arriving at dusk, the entrance, the barrels, a guest table, the head table, the bridal suite and the full layout from above.</span></figcaption>
+  </figure>
 
   <figure class="hero">
     <button type="button" aria-label="View the hall from the barrels full size"><img src="img/barrels.jpg" alt="The hall lit by string lights and candles, wine barrel tables with lanterns in front and round tables beyond" width="1920" height="1080"></button>
@@ -132,6 +140,4 @@ h2 { margin: 0 0 -16px; font-family: var(--display); font-weight: 500; font-size
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !viewer.hidden) close(); });
 })();
 </script>
-
-
 
